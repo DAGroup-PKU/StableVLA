@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="title" content="StableVLA: Towards Robust Vision-Language-Action Models without Extra Data">
+  <meta name="description" content="StableVLA introduces the Information Bottleneck Adapter (IB-Adapter), a lightweight module that improves VLA robustness against visual corruptions by 35% on average without any extra data.">
+  <meta name="keywords" content="Vision-Language-Action, Robustness, Robotics, Information Bottleneck, VLA">
+  <meta name="author" content="Yiyang Fu, Chubin Zhang, Shukai Gong, Yufan Deng, Kaiwei Sun, Qiyang Min, Qibin Hou, Yansong Tang, Jianan Wang, Daquan Zhou">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Peking University, DAGroup">
+  <meta property="og:title" content="StableVLA: Towards Robust Vision-Language-Action Models without Extra Data">
+  <meta property="og:description" content="A lightweight IB-Adapter that improves VLA robustness by 35% on average without extra data.">
+  <meta property="og:url" content="https://baiyingzhuying.github.io/StableVLA/">
+
+  <meta name="citation_title" content="StableVLA: Towards Robust Vision-Language-Action Models without Extra Data">
+  <meta name="citation_author" content="Fu, Yiyang">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="ICML 2026">
+
+  <meta name="theme-color" content="#2563eb">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>StableVLA: Towards Robust VLA Models without Extra Data</title>
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+
+  <style>
+    .publication-title { font-size: 2.2rem; line-height: 1.2; }
+    .author-block { margin: 0 0.3rem; }
+    .affil-block { font-size: 0.95rem; color: #555; }
+    .badge-icml {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.4rem 1.2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      display: inline-block;
+      box-shadow: 0 4px 6px rgba(102,126,234,0.3);
+      font-size: 1rem;
+      margin: 0.8rem 0;
+    }
+    .highlight-cards { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin: 2rem 0; }
+    .highlight-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #667eea;
+      min-width: 160px;
+      flex: 1;
+    }
+    .highlight-card .number { font-size: 2.5rem; font-weight: 800; color: #667eea; line-height: 1; }
+    .highlight-card .label { font-size: 0.85rem; color: #666; margin-top: 0.3rem; }
+    .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; }
+    .figure-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin: 1.5rem 0;
+    }
+    .figure-card img { width: 100%; display: block; }
+    .figure-caption {
+      padding: 0.8rem 1.2rem;
+      font-size: 0.88rem;
+      color: #555;
+      background: #f9f9fb;
+      border-top: 1px solid #eee;
+    }
+    .figure-caption b { color: #333; }
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } .highlight-cards { flex-direction: column; } .publication-title { font-size: 1.6rem; } }
+    .method-box {
+      background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    .bibtex-box {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      position: relative;
+      overflow-x: auto;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+      background: #45475a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .copy-btn:hover { background: #585b70; }
+    .scroll-to-top {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+      background: #667eea; color: white; border: none; border-radius: 50%;
+      width: 44px; height: 44px; cursor: pointer; font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+      display: none;
+    }
+    .scroll-to-top.visible { display: flex; align-items: center; justify-content: center; }
+    .tag-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .tag-item { background: #eef2ff; color: #667eea; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+    .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+
+<button class="scroll-to-top" id="scrollBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<main>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">
+            <span class="gradient-text">StableVLA</span>: Towards Robust
+            Vision-Language-Action Models
+            <br>without Extra Data
+          </h1>
+
+          <div class="is-size-5 publication-authors" style="margin-top:1rem;">
+            <span class="author-block"><a href="#">Yiyang Fu</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="#">Chubin Zhang</a><sup>2,3</sup>,</span>
+            <span class="author-block"><a href="#">Shukai Gong</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="#">Yufan Deng</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="#">Kaiwei Sun</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="#">Qiyang Min</a>,</span>
+            <br>
+            <span class="author-block"><a href="#">Qibin Hou</a><sup>5</sup>,</span>
+            <span class="author-block"><a href="#">Yansong Tang</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="#">Jianan Wang</a><sup>3</sup>,</span>
+            <span class="author-block"><a href="#">Daquan Zhou</a><sup>1†</sup></span>
+          </div>
+
+          <div class="is-size-6 affil-block" style="margin-top:0.6rem;">
+            <sup>1</sup>Peking University &nbsp;
+            <sup>2</sup>Tsinghua University &nbsp;
+            <sup>3</sup>Astribot &nbsp;
+            <sup>4</sup>Nanjing University &nbsp;
+            <sup>5</sup>Nankai University
+            <br>
+            <small><sup>†</sup>Corresponding author</small>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <span class="badge-icml">
+              <i class="fas fa-trophy" style="margin-right:0.4rem;"></i>ICML 2026
+            </span>
+          </div>
+
+          <div class="column has-text-centered" style="margin-top:0.5rem;">
+            <div class="publication-links">
+              <!-- Paper -->
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code -->
+              <span class="link-block">
+                <a href="https://github.com/baiyingzhuying/StableVLA" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <!-- Hugging Face -->
+              <span class="link-block">
+                <a href="https://huggingface.co/beikui12345/stablevla/tree/main" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-robot"></i></span>
+                  <span>Model</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===== END HERO ===== -->
+
+
+<!-- ===== VIDEO ===== -->
+<section class="section" style="padding-top:0;">
+  <div class="container is-max-desktop">
+    <div class="video-wrapper">
+      <!-- TODO: Replace VIDEO_ID with your YouTube video ID after uploading -->
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID"
+              title="StableVLA Demo Video"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+      </iframe>
+    </div>
+    <p class="has-text-centered" style="margin-top:0.8rem; color:#888; font-size:0.9rem;">
+      Simulation and real-robot demonstrations of StableVLA under various visual corruptions.
+    </p>
+  </div>
+</section>
+<!-- ===== END VIDEO ===== -->
+
+
+<!-- ===== TEASER FIGURE ===== -->
+<section class="section" style="padding-top:0;">
+  <div class="container is-max-desktop">
+    <div class="figure-card">
+      <img src="static/images/figures/teaser.png" alt="StableVLA teaser: robustness comparison and semantic clustering visualization">
+      <p class="figure-caption">
+        <b>(a) Robustness comparison.</b> Triangle marks and bar charts denote performance on clean and corrupted data (averaged across severities), respectively. StableVLA achieves state-of-the-art zero-shot robustness with a 0.5B backbone, rivaling 7B-scale models.
+        <b>(b) Semantic Clustering Visualization.</b> K-means clustering (K=2) of projector features under severe corruption. StableVLA maintains coherent, object-centric semantic grouping on both simulation and real-world tasks, whereas the baseline fails to isolate task-relevant regions.
+      </p>
+    </div>
+  </div>
+</section>
+<!-- ===== END TEASER ===== -->
+
+
+<!-- ===== HIGHLIGHTS ===== -->
+<section class="section" style="background:#f7f8fd; padding: 2rem 1.5rem;">
+  <div class="container is-max-desktop">
+    <div class="highlight-cards">
+      <div class="highlight-card">
+        <div class="number">+35.2%</div>
+        <div class="label">avg. improvement in simulation (vs. VLA-Adapter)</div>
+      </div>
+      <div class="highlight-card">
+        <div class="number">+31.7pp</div>
+        <div class="label">improvement on real-robot tasks</div>
+      </div>
+      <div class="highlight-card">
+        <div class="number">&lt;10M</div>
+        <div class="label">extra parameters added</div>
+      </div>
+      <div class="highlight-card">
+        <div class="number">14×</div>
+        <div class="label">smaller backbone than OpenVLA-OFT</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===== END HIGHLIGHTS ===== -->
+
+
+<!-- ===== ABSTRACT ===== -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            It is infeasible to encompass all possible disturbances within the training dataset.
+            This raises a critical question regarding the robustness of Vision-Language-Action (VLA) models
+            when encountering unseen real-world visual disturbances, particularly under imperfect visual conditions.
+            In this work, we conduct a systematic study based on recent state-of-the-art VLA models and reveal a
+            <b>significant performance drop</b> when visual disturbances absent from the training data are introduced.
+          </p>
+          <p>
+            To mitigate this issue, we propose a lightweight adapter module grounded in information theory, termed the
+            <b>Information Bottleneck Adapter (IB-Adapter)</b>, which selectively filters potential noise from visual inputs.
+            Without requiring any extra data or augmentation strategies, IB-Adapter consistently improves over the baseline
+            by an average of <b>30%</b>, while adding fewer than <b>10M parameters</b>, demonstrating notable efficiency and effectiveness.
+          </p>
+          <p>
+            Furthermore, even with a <b>14× smaller backbone</b> (0.5B parameters) and no pre-training on the Open X-Embodiment dataset,
+            our model <b>StableVLA</b> achieves robustness competitive with 7B-scale state-of-the-art VLAs.
+            With negligible parameter overhead (&lt;10M), our approach maintains accuracy on long-horizon tasks and
+            surpasses OpenPi under real-world visual disturbances.
+          </p>
+        </div>
+        <div class="tag-row" style="justify-content:center;">
+          <span class="tag-item">VLA Robustness</span>
+          <span class="tag-item">Information Bottleneck</span>
+          <span class="tag-item">Zero-shot</span>
+          <span class="tag-item">Data-free</span>
+          <span class="tag-item">Real-robot</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===== END ABSTRACT ===== -->
+
+
+
+
+<!-- ===== MOTIVATION ===== -->
+<section class="section" style="background:#f7f8fd;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Motivation</h2>
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <div class="figure-card">
+          <img src="static/images/figures/insight.png" alt="Performance drop under visual corruptions">
+          <p class="figure-caption">
+            <b>VLA models are highly vulnerable to visual corruptions.</b>
+            A model achieving 96% success rate on clean data can drop to near 0% under severe blur.
+            This fragility is shared across VLA-Adapter, OpenVLA, OpenVLA-OFT, and OpenPi-0.5.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-box">
+          <h3 class="title is-5">Root Cause: The Projector</h3>
+          <p>Through empirical analysis, we identify that the primary source of vulnerability is the <b>projector module</b> that bridges the vision encoder and the LLM backbone.</p>
+          <br>
+          <p>Standard MLP projectors act as <b>all-pass filters</b>, indiscriminately propagating both task-relevant semantics and visual noise into the policy network.</p>
+          <br>
+          <p>Our solution: enforce the <b>Information Bottleneck (IB) principle</b> at the modality alignment stage — without any extra data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===== END MOTIVATION ===== -->
+
+
+<!-- ===== METHOD ===== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Method: IB-Adapter</h2>
+
+    <div class="figure-card">
+      <img src="static/images/figures/main_arch.png" alt="Architecture of IB-Adapter and StableVLA">
+      <p class="figure-caption">
+        <b>Architecture of IB-Adapter and StableVLA.</b>
+        We replace the standard MLP projector with <b>Fused IB-Adapter</b>, a dual-stream module combining:
+        (1) <b>Covariance Attention</b>: computes a Gram matrix (D×D) to capture global channel correlations;
+        (2) <b>Sigmoid Gating</b>: independently suppresses noisy channels without forcing competition (unlike Softmax);
+        (3) <b>MLP pathway</b>: preserves fine-grained spatial details for precise manipulation.
+      </p>
+    </div>
+
+    <div class="columns is-vcentered" style="margin-top:1rem;">
+      <div class="column is-half">
+        <div class="figure-card">
+          <img src="static/images/figures/CAP.png" alt="IB-Adapter module detail">
+          <p class="figure-caption">
+            <b>IB-Adapter module.</b> Channel-wise covariance gating adaptively suppresses noise channels
+            while preserving task-relevant semantic structure.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-box">
+          <h3 class="title is-5">Key Insight</h3>
+          <p>Unlike spatial-domain attention in ViTs, IB-Adapter operates in the <b>channel dimension</b>:</p>
+          <br>
+          <ul style="list-style:disc; margin-left:1.2rem;">
+            <li>Semantic features and noise are heterogeneously distributed <b>across channels</b></li>
+            <li>Stochastic corruptions are <b>uncorrelated</b> with structural object features → low Gram matrix values</li>
+            <li>Sigmoid gates <b>independently suppress</b> noisy channels (gate ≈ 0)</li>
+            <li>Result: clean, object-centric focus before features reach the policy</li>
+          </ul>
+          <br>
+          <p style="color:#667eea; font-weight:600;">Simply replacing the MLP projector yields +35.2% on LIBERO.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===== END METHOD ===== -->
+
+
+<!-- ===== SIMULATION RESULTS ===== -->
+<section class="section" style="background:#f7f8fd;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Simulation Results</h2>
+
+    <div class="figure-card" style="margin-bottom:1.5rem;">
+      <img src="static/images/figures/radar_4tasks_with_clean.png" alt="Robustness radar chart across 4 LIBERO task suites">
+      <p class="figure-caption">
+        <b>Robustness radar chart.</b> StableVLA consistently envelopes VLA-Adapter across all corruption categories
+        in all four LIBERO task suites, while matching or exceeding 7B-scale baselines.
+      </p>
+    </div>
+
+    <!-- Main results table -->
+    <div style="overflow-x:auto; margin:1.5rem 0;">
+      <p style="font-size:0.92rem; margin-bottom:0.8rem; color:#444;">
+        <b>Table 1: Full comparison on LIBERO and CALVIN.</b> Success rate (%) for LIBERO; avg. completed tasks (max 5) for CALVIN.
+        C = Clean, S3/S4/S5 = Severity 3/4/5.
+        <span style="background:#667eea;color:white;padding:1px 6px;border-radius:3px;font-size:0.8rem;">Bold</span> = best,
+        <span style="text-decoration:underline;">underline</span> = second best.
+      </p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:800px;">
+        <thead>
+          <tr style="background:#f0f2ff;">
+            <th rowspan="2" style="padding:8px 10px;border:1px solid #ddd;text-align:left;">Training</th>
+            <th rowspan="2" style="padding:8px 10px;border:1px solid #ddd;text-align:left;">Method</th>
+            <th colspan="4" style="padding:6px;border:1px solid #ddd;text-align:center;background:#e8ecff;">Spatial</th>
+            <th colspan="4" style="padding:6px;border:1px solid #ddd;text-align:center;background:#eef5ee;">Object</th>
+            <th colspan="4" style="padding:6px;border:1px solid #ddd;text-align:center;background:#fff5e8;">Goal</th>
+            <th colspan="4" style="padding:6px;border:1px solid #ddd;text-align:center;background:#fdeef4;">Long</th>
+            <th colspan="4" style="padding:6px;border:1px solid #ddd;text-align:center;background:#f0f0f0;">CALVIN</th>
+          </tr>
+          <tr style="background:#f7f8fd;">
+            <td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">C</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S3</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S4</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S5</td>
+            <td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">C</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S3</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S4</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S5</td>
+            <td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">C</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S3</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S4</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S5</td>
+            <td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">C</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S3</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S4</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S5</td>
+            <td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">C</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S3</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S4</td><td style="padding:4px 6px;border:1px solid #ddd;text-align:center;font-weight:600;">S5</td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- OpenVLA -->
+          <tr>
+            <td rowspan="2" style="padding:6px 10px;border:1px solid #ddd;font-size:0.78rem;color:#555;">OpenX<br>Pretrain</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;white-space:nowrap;">OpenVLA (7B)</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">80.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">40.9</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">24.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">14.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">69.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">18.2</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">10.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">2.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">74.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">38.7</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">27.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">16.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">55.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">20.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">12.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">7.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#aaa;" colspan="4">—</td>
+          </tr>
+          <!-- OpenVLA-OFT -->
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #ddd;white-space:nowrap;">OpenVLA-OFT (7B)</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">92.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">89.3</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">84.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">72.1</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">98.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">82.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">69.2</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">52.8</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">96.8</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">94.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">84.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">70.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">94.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">77.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">61.9</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">40.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#aaa;" colspan="4">—</td>
+          </tr>
+          <!-- OpenPi -->
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #ddd;font-size:0.78rem;color:#555;">OpenX+Web<br>Co-train</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;white-space:nowrap;">OpenPi–0.5 (3B)</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">98.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">88.3</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">79.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">62.4</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">99.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">97.1</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">88.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">76.4</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">97.2</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">87.2</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">82.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">64.2</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">92.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">76.1</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">65.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">47.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#aaa;" colspan="4">—</td>
+          </tr>
+          <!-- VLA-Adapter -->
+          <tr style="background:#fafafa;">
+            <td rowspan="2" style="padding:6px 10px;border:1px solid #ddd;font-size:0.78rem;color:#555;">VLM<br>Direct FT</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;white-space:nowrap;">VLA-Adapter (0.5B)</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">96.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">93.7</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">83.3</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">58.5</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">96.8</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">71.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">44.1</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">29.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">97.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">79.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">64.7</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">47.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">94.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">63.5</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">41.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">26.2</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">4.14</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">2.56</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">1.89</td><td style="padding:6px;border:1px solid #ddd;text-align:center;">1.44</td>
+          </tr>
+          <!-- StableVLA -->
+          <tr style="background:#f0f3ff;">
+            <td style="padding:6px 10px;border:1px solid #ddd;white-space:nowrap;font-weight:700;">StableVLA (0.5B) <span style="color:#667eea;">★</span></td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">96.2</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">94.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">92.1</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">82.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">98.8</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">92.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">83.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">70.2</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">98.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">93.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">85.0</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">71.9</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">93.6</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">76.3</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">62.4</td><td style="padding:6px;border:1px solid #ddd;text-align:center;text-decoration:underline;">45.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">4.17</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">2.77</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">2.11</td><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">1.51</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="figure-card">
+      <img src="static/images/figures/figure3_feature_heatmap.png" alt="Feature heatmap comparison">
+      <p class="figure-caption">
+        <b>Feature heatmap comparison.</b> Under visual corruptions, standard MLP features become scattered and degraded.
+        IB-Adapter maintains coherent, task-relevant activation even at high corruption severity.
+      </p>
+    </div>
+  </div>
+</section>
+<!-- ===== END SIMULATION RESULTS ===== -->
+
+
+<!-- ===== REAL ROBOT RESULTS ===== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Real-Robot Experiments</h2>
+    <p class="has-text-centered" style="margin-bottom:1.5rem; color:#555;">
+      Evaluated on <b>Astribot S1</b> dual-arm robot across 4 tasks under Gaussian noise, defocus blur,
+      oil contamination, and physical shelter.
+    </p>
+
+    <div class="figure-card">
+      <img src="static/images/figures/stable_real_quali.png" alt="Real-world qualitative results">
+      <p class="figure-caption">
+        <b>Qualitative comparison on real-robot tasks.</b>
+        StableVLA maintains manipulation capability under severe physical and digital visual corruptions
+        where VLA-Adapter and π-0.5 fail. Tasks include Pick &amp; Place, Throw Basketball, Pour Water, and Pack the Doll.
+      </p>
+    </div>
+
+    <!-- Real-world results table -->
+    <div style="overflow-x:auto; margin:1.5rem 0;">
+      <p style="font-size:0.92rem; margin-bottom:0.8rem; color:#444;">
+        <b>Table 2: Real-world robustness evaluation on Astribot S1.</b>
+        "Clean" = absolute success rate (%). All other columns = performance change (Δ pp) relative to clean.
+        Noise &amp; Blur: averaged across severity levels. Oil &amp; Shelter: physical interference.
+        <b>Bold</b> = smallest performance drop (best robustness).
+      </p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <thead>
+          <tr style="background:#f0f2ff;">
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:left;">Task</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:left;">Method</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;">Clean (%)</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;">Noise (Δ)</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;">Blur (Δ)</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-style:italic;">Oil (Δ)</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-style:italic;">Shelter (Δ)</th>
+            <th style="padding:8px 10px;border:1px solid #ddd;text-align:center;">Avg (Δ)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Pick and Place -->
+          <tr><td rowspan="3" style="padding:6px 10px;border:1px solid #ddd;font-weight:600;">Pick &amp;<br>Place</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;">π-0.5</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">100.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-63.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-16.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.1</td>
+          </tr>
+          <tr style="background:#fafafa;">
+            <td style="padding:6px 10px;border:1px solid #ddd;">VLA-Adapter</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">80.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-66.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-49.2</td>
+          </tr>
+          <tr style="background:#f0f3ff;">
+            <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;">StableVLA ★</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">80.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-17.5</td>
+          </tr>
+          <!-- Throw Basketball -->
+          <tr><td rowspan="3" style="padding:6px 10px;border:1px solid #ddd;font-weight:600;">Throw<br>Basketball</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;">π-0.5</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">80.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-33.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-35.8</td>
+          </tr>
+          <tr style="background:#fafafa;">
+            <td style="padding:6px 10px;border:1px solid #ddd;">VLA-Adapter</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-53.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-38.3</td>
+          </tr>
+          <tr style="background:#f0f3ff;">
+            <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;">StableVLA ★</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-36.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-16.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-18.4</td>
+          </tr>
+          <!-- Pour Water -->
+          <tr><td rowspan="3" style="padding:6px 10px;border:1px solid #ddd;font-weight:600;">Pour<br>Water</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;">π-0.5</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">70.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+          </tr>
+          <tr style="background:#fafafa;">
+            <td style="padding:6px 10px;border:1px solid #ddd;">VLA-Adapter</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-25.0</td>
+          </tr>
+          <tr style="background:#f0f3ff;">
+            <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;">StableVLA ★</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-23.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-16.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">0.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-12.5</td>
+          </tr>
+          <!-- Pack Doll -->
+          <tr><td rowspan="3" style="padding:6px 10px;border:1px solid #ddd;font-weight:600;">Pack<br>the Doll</td>
+            <td style="padding:6px 10px;border:1px solid #ddd;">π-0.5</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">80.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-63.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-33.3</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-41.7</td>
+          </tr>
+          <tr style="background:#fafafa;">
+            <td style="padding:6px 10px;border:1px solid #ddd;">VLA-Adapter</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">50.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-40.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-26.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-30.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;color:#c00;">-31.7</td>
+          </tr>
+          <tr style="background:#f0f3ff;">
+            <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;">StableVLA ★</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;">60.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-16.7</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-20.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-10.0</td>
+            <td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:700;color:#667eea;">-14.2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="figure-card" style="margin-top:1.5rem;">
+      <img src="static/images/figures/semantic.png" alt="Semantic grouping visualization">
+      <p class="figure-caption">
+        <b>Semantic grouping of Fused IB-Adapter output features.</b>
+        K-means clustering (K=2) applied to projector output features under Impulse Noise (severity 3 and 5).
+        StableVLA maintains consistent, object-centric grouping even at high noise levels,
+        while the MLP baseline's features collapse under corruption.
+      </p>
+    </div>
+  </div>
+</section>
+<!-- ===== END REAL ROBOT RESULTS ===== -->
+
+
+<!-- ===== BIBTEX ===== -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <div class="bibtex-box">
+      <button class="copy-btn" onclick="
+        navigator.clipboard.writeText(document.getElementById('bibtex-text').innerText);
+        this.innerText='Copied!';
+        setTimeout(()=>this.innerText='Copy',2000);
+      ">Copy</button>
+      <pre id="bibtex-text" style="margin:0; white-space:pre-wrap;">@inproceedings{fu2026stablevla,
+  title     = {StableVLA: Towards Robust Vision-Language-Action Models without Extra Data},
+  author    = {Fu, Yiyang and Zhang, Chubin and Gong, Shukai and Deng, Yufan and
+               Sun, Kaiwei and Min, Qiyang and Hou, Qibin and Tang, Yansong and
+               Wang, Jianan and Zhou, Daquan},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2026},
+}</pre>
+    </div>
+  </div>
+</section>
+<!-- ===== END BIBTEX ===== -->
+
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+              Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            <br>
+            DAGroup · Peking University
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll-to-top button
+  window.addEventListener('scroll', () => {
+    document.getElementById('scrollBtn').classList.toggle('visible', window.scrollY > 300);
+  });
+</script>
+
+</body>
+</html>

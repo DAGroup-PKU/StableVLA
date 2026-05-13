@@ -1,6 +1,6 @@
 <div align="center">
 
-# [ICML 2026🔥🔥🔥] StableVLA: Towards Robust Vision-Language-Action Models without Extra Data
+# StableVLA: Towards Robust Vision-Language-Action Models without Extra Data
 
 [![Paper](https://img.shields.io/badge/Paper-ICML%202026-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/TODO)
 [![Project Page](https://img.shields.io/badge/Project-Page-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://baiyingzhuying.github.io/StableVLA/)

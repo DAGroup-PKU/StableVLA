@@ -417,12 +417,27 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered section-title">Simulation Results</h2>
 
-    <div class="figure-card" style="margin-bottom:1.5rem;">
-      <img src="static/images/figures/radar_4tasks_with_clean.png" alt="Robustness radar chart across 4 LIBERO task suites">
-      <p class="figure-caption">
-        <b>Robustness radar chart.</b> StableVLA consistently envelopes VLA-Adapter across all corruption categories
-        in all four LIBERO task suites, while matching or exceeding 7B-scale baselines.
-      </p>
+    <div style="display:flex; gap:1.2rem; margin-bottom:1.5rem;">
+      <div class="figure-card" style="margin:0; flex:19;">
+        <div style="aspect-ratio:2413/2544; overflow:hidden;">
+          <img src="static/images/figures/radar_4tasks_with_clean.png" alt="Robustness radar chart across 4 LIBERO task suites" style="width:100%; height:100%; object-fit:contain;">
+        </div>
+        <p class="figure-caption">
+          <b>Robustness radar chart.</b> StableVLA consistently envelopes VLA-Adapter across all corruption categories
+          in all four LIBERO task suites, while matching or exceeding 7B-scale baselines.
+        </p>
+      </div>
+      <div class="figure-card" style="margin:0; flex:29;">
+        <div style="aspect-ratio:2237/1542; overflow:hidden;">
+          <img src="static/images/figures/semantic.png" alt="Semantic grouping visualization" style="width:100%; height:100%; object-fit:contain;">
+        </div>
+        <p class="figure-caption">
+          <b>Semantic grouping of Fused IB-Adapter output features.</b>
+          K-means clustering (K=2) applied to projector output features under Impulse Noise (severity 3 and 5).
+          StableVLA maintains consistent, object-centric grouping even at high noise levels,
+          while the MLP baseline's features collapse under corruption.
+        </p>
+      </div>
     </div>
 
     <!-- Main results table -->
@@ -505,13 +520,6 @@
       </table>
     </div>
 
-    <div class="figure-card">
-      <img src="static/images/figures/figure3_feature_heatmap.png" alt="Feature heatmap comparison">
-      <p class="figure-caption">
-        <b>Feature heatmap comparison.</b> Under visual corruptions, standard MLP features become scattered and degraded.
-        IB-Adapter maintains coherent, task-relevant activation even at high corruption severity.
-      </p>
-    </div>
   </div>
 </section>
 <!-- ===== END SIMULATION RESULTS ===== -->
@@ -526,7 +534,7 @@
       oil contamination, and physical shelter.
     </p>
 
-    <div class="figure-card">
+    <div class="figure-card" style="max-width:88%; margin: 0 auto;">
       <img src="static/images/figures/stable_real_quali.png" alt="Real-world qualitative results">
       <p class="figure-caption">
         <b>Qualitative comparison on real-robot tasks.</b>
@@ -673,15 +681,6 @@
       </table>
     </div>
 
-    <div class="figure-card" style="margin-top:1.5rem;">
-      <img src="static/images/figures/semantic.png" alt="Semantic grouping visualization">
-      <p class="figure-caption">
-        <b>Semantic grouping of Fused IB-Adapter output features.</b>
-        K-means clustering (K=2) applied to projector output features under Impulse Noise (severity 3 and 5).
-        StableVLA maintains consistent, object-centric grouping even at high noise levels,
-        while the MLP baseline's features collapse under corruption.
-      </p>
-    </div>
   </div>
 </section>
 <!-- ===== END REAL ROBOT RESULTS ===== -->

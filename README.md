@@ -1,6 +1,6 @@
 <div align="center">
 
-# StableVLA: Towards Robust Vision-Language-Action Models without Extra Data
+# [ICML 2026🔥🔥🔥] StableVLA: Towards Robust Vision-Language-Action Models without Extra Data
 
 [![Paper](https://img.shields.io/badge/Paper-ICML%202026-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/TODO)
 [![Project Page](https://img.shields.io/badge/Project-Page-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://baiyingzhuying.github.io/StableVLA/)
@@ -17,9 +17,9 @@
 ---
 
 > **📝 Paper:** https://arxiv.org/abs/TODO  
-> **🌍 Project page:** https://baiyingzhuying.github.io/StableVLA/  
-> **🤗 HuggingFace:** https://huggingface.co/beikui12345/stablevla  
-> **GitHub:** https://github.com/baiyingzhuying/StableVLA
+> **🌍 Project page:** https://dagroup-pku.github.io/StableVLA/  
+> **🤗 HuggingFace:** https://huggingface.co/DAGroup-PKU/StableVLA  
+> **GitHub:** https://github.com/DAGroup-PKU/HumanNet/tree/main/src/model/StableVLA
 
 ---
 
@@ -59,8 +59,8 @@ conda activate stablevla
 pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0
 
 # Install package
-git clone https://github.com/baiyingzhuying/StableVLA.git
-cd StableVLA
+git clone https://github.com/DAGroup-PKU/HumanNet.git
+cd HumanNet/src/model/StableVLA
 pip install -e .
 
 pip install packaging ninja
@@ -157,7 +157,7 @@ Place the downloaded folders as follows:
 ```
 .
 ├── pretrained_models/
-│   └── stablevla/          # ← from pretrained_models/ on HF
+│   └── stablevla-fusedfan-projector/   # ← from pretrained_models/ on HF
 └── outputs/
     ├── spatial/            # ← from spatial/ on HF
     ├── object/
@@ -178,7 +178,7 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 scripts/pretrain.py \
     --model.type "prism-qwen25-extra-dinosiglip-224px+0_5b+fusedfan-projector" \
     --dataset.type "llava-lvis4v-lrv" \
     --dataset.dataset_root_dir "data/vlm" \
-    --run_root_dir "pretrained_models/stablevla" \
+    --run_root_dir "pretrained_models/stablevla-fusedfan-projector" \
     --stage "finetune" \
     --wandb_project "stablevla" \
     --wandb_entity "YOUR_WANDB_ENTITY"
@@ -192,7 +192,7 @@ data_name=libero_spatial_no_noops
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes 1 --nproc-per-node 4 \
     vla-scripts/finetune_fused.py \
-    --vlm_path pretrained_models/stablevla \
+    --vlm_path pretrained_models/stablevla-fusedfan-projector \
     --config_file_path pretrained_models/configs_fusedfan \
     --data_root_dir data/libero \
     --dataset_name $data_name \
@@ -233,7 +233,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes 1 --nproc-per-node 4
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes 1 --nproc-per-node 4 \
     vla-scripts/finetune_fused.py \
-    --vlm_path pretrained_models/stablevla \
+    --vlm_path pretrained_models/stablevla-fusedfan-projector \
     --config_file_path pretrained_models/configs_fusedfan \
     --data_root_dir data \
     --dataset_name calvin_abc \
@@ -388,6 +388,11 @@ C = Clean, S3/S4/S5 = Severity 3/4/5. **Bold** = best, <u>underline</u> = second
   <tr><td><b>StableVLA (Ours)</b></td><td><b>0.5B</b></td><td><b>4.17</b></td><td><b>2.77</b></td><td><b>2.11</b></td><td><b>1.51</b></td></tr>
 </table>
 
+
+## :heart: Acknowledgment
+
+We thank [VLA-Adapter](https://github.com/OpenHelix-Team/VLA-Adapter), [OpenVLA-OFT](https://github.com/moojink/openvla-oft), [MiniVLA](https://github.com/Stanford-ILIAD/openvla-mini), and [RoboDual](https://github.com/OpenDriveLab/RoboDual) for their open-sourced work.
+
 ---
 
 ## :pencil2: Citation
@@ -406,7 +411,3 @@ If you find StableVLA helpful, please cite our paper:
 ```
 
 ---
-
-## :heart: Acknowledgment
-
-We thank [VLA-Adapter](https://github.com/OpenHelix-Team/VLA-Adapter), [OpenVLA-OFT](https://github.com/moojink/openvla-oft), [MiniVLA](https://github.com/Stanford-ILIAD/openvla-mini), and [RoboDual](https://github.com/OpenDriveLab/RoboDual) for their open-sourced work.

@@ -2,9 +2,9 @@
 
 # [ICML 2026🔥🔥🔥] StableVLA: Towards Robust Vision-Language-Action Models without Extra Data
 
-[![Paper](https://img.shields.io/badge/Paper-ICML%202026-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/TODO)
-[![Project Page](https://img.shields.io/badge/Project-Page-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://baiyingzhuying.github.io/StableVLA/)
-[![HuggingFace](https://img.shields.io/badge/🤗-Model%20Weights-fcd022?style=for-the-badge)](https://huggingface.co/beikui12345/stablevla)
+[![Paper](https://img.shields.io/badge/Paper-ICML%202026-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2605.18287)
+[![Project Page](https://img.shields.io/badge/Project-Page-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dagroup-pku.github.io/StableVLA/ )
+[![HuggingFace](https://img.shields.io/badge/🤗-Model%20Weights-fcd022?style=for-the-badge)](https://huggingface.co/DAGroup-PKU/StableVLA  )
 
 **Yiyang Fu<sup>1</sup>, Chubin Zhang<sup>2,3</sup>, Shukai Gong<sup>1</sup>, Yufan Deng<sup>1</sup>, Kaiwei Sun<sup>4</sup>, Qiyang Min, Qibin Hou<sup>5</sup>, Yansong Tang<sup>2</sup>, Jianan Wang<sup>3</sup>, Daquan Zhou<sup>1†</sup>**
 
@@ -16,7 +16,7 @@
 
 ---
 
-> **📝 Paper:** https://arxiv.org/abs/TODO  
+> **📝 Paper:** https://arxiv.org/abs/2605.18287 
 > **🌍 Project page:** https://dagroup-pku.github.io/StableVLA/  
 > **🤗 HuggingFace:** https://huggingface.co/DAGroup-PKU/StableVLA  
 > **GitHub:** https://github.com/DAGroup-PKU/HumanNet/tree/main/src/model/StableVLA
